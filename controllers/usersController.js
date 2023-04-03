@@ -50,3 +50,45 @@ exports.register = async (req, res) => {
     });
   }  
 };
+
+
+exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  // Check the request has the required fields
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ error: "Login requires email and password fields" });
+  }
+
+  // Find user by email
+  knex("users")
+    .where({ email: email })
+    .then(users => {
+        if (users.length !== 1) {
+            return res.status(401).json({
+                error: "Invalid login credentials"
+            })
+        }
+
+        // If email matches a record, then we will have found our user
+        const foundUser = users[0];
+        // We then need to compare the user's password to their hashed password in the database which will require bcrypt
+        const isValidPassword = bcrypt.compareSync(password, foundUser.password)
+
+        if (!isValidPassword) {
+            return res.status(401).json({
+                error: "Invalid login credentials"
+            })
+        }
+
+        // Reaching this code means we have valid login credentials so a JWT can now be created and sent back to the client
+        const token = jwt.sign({ id: foundUser.id }, process.env.JWT_SECRET_KEY);
+    
+        res.json({
+            message: "Successfully logged in",
+            token,
+        })
+    })
+};
