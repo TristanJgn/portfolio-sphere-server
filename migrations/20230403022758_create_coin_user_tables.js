@@ -3,12 +3,13 @@ exports.up = function (knex) {
     .createTable("coin_data", (table) => {
       table.uuid("id").primary();
       table.string("name").notNullable();
+      table.string("symbol").notNullable();
       table.decimal("price", 14, 2).notNullable(); // Allows for price to be 14 numbers with 2 decimals for the cents
-      table.decimal("1hr_percent_change", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
-      table.decimal("24hr_percent_change", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
-      table.decimal("7d_percent_change", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
+      table.decimal("percent_change_1hr", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
+      table.decimal("percent_change_24hr", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
+      table.decimal("percent_change_7d", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
       table.integer("market_cap").notNullable(); // Use integer as these values should be rounded
-      table.integer("24h_volume").notNullable(); // Use integer as these values should be rounded
+      table.integer("volume_24hr").notNullable(); // Use integer as these values should be rounded
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     })
     .createTable("user_holdings", (table) => {
