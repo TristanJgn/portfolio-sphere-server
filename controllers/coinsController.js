@@ -10,11 +10,9 @@ const axiosHeaders = {
 
 // Clears coin_data table of old data and replaces it with the new data from the API request
 // as well as returns the new data so the route can send it back to the client
-function updateCoinTable (newCoinData) {
-  knex("coin_data").del()
-  .then(() => {
-    return knex("coin_data").insert(newCoinData);
-  })
+async function updateCoinTable (newCoinData) {
+  await knex("coin_data").del()
+  await knex("coin_data").insert(newCoinData);
   return newCoinData;
 }
 
