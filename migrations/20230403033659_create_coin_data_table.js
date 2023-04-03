@@ -8,23 +8,13 @@ exports.up = function (knex) {
       table.decimal("percent_change_1hr", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
       table.decimal("percent_change_24hr", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
       table.decimal("percent_change_7d", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
-      table.integer("market_cap").notNullable(); // Use integer as these values should be rounded
-      table.integer("volume_24hr").notNullable(); // Use integer as these values should be rounded
-      table.timestamp("updated_at").defaultTo(knex.fn.now());
-    })
-    .createTable("user_holdings", (table) => {
-      table.increments("id").primary();
-      table
-        .uuid("coin_id")
-        .references("coin_data.id")
-        .onUpdate("CASCADE")
-        .onDelete("CASCADE");
-      table.string("coin_name").notNullable();
-      table.decimal("coin_amount", 14, 8).notNullable(); // Allow up to 8 decimals as cryptocurrency holdings can be a small fraction
+      table.decimal("market_cap", 14, 0).notNullable(); // Use decminal as values exceed the integer limit
+      table.decimal("volume_24hr", 14, 0).notNullable(); // Use decminal as values exceed the integer limit
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     });
 };
 
 exports.down = function (knex) {
-  return knex.schema.dropTable("user_holdings").dropTable("coin_data");
+  return knex.schema
+    .dropTable("coin_data")
 };
