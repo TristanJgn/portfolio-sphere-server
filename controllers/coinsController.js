@@ -19,7 +19,7 @@ async function updateCoinTable (newCoinData) {
 exports.index = (req, res) => {
   axios
   .get(
-    "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=10",
+    "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=100",
     { headers: axiosHeaders }
   )
   .then((response) => {
