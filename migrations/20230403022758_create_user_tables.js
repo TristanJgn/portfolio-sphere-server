@@ -15,6 +15,7 @@ exports.up = function (knex) {
         .onDelete("CASCADE");
       table.uuid("coin_id");
       table.string("coin_name").notNullable();
+      table.string("coin_symbol").notNullable();
       table.decimal("coin_amount", 14, 8).notNullable(); // Allow up to 8 decimals as cryptocurrency holdings can be a small fraction
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     });

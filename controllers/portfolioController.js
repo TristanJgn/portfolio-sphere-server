@@ -5,6 +5,7 @@ exports.index = (req, res) => {
       .select(
         "coin_id",
         "coin_name",
+        "coin_symbol",
         "coin_amount",
       )
       .where({ user_id: req.userId })
