@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 const coinsRoutes = require("./routes/coinsRoute");
 const usersRoutes = require("./routes/usersRoute");
+const portfolioRoutes = require("./routes/portfolioRoute");
 
 // Create an instance of express
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 // Define routes
 app.use("/coins", coinsRoutes);
 app.use("/users", usersRoutes);
+app.use("/portfolio", portfolioRoutes);
 
 // Bootstrap server
 app.listen(PORT, () => {
