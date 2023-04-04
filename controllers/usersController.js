@@ -44,7 +44,9 @@ exports.register = async (req, res) => {
     // Generate a token on successful registration so the user can start using the site without needing to login right after
     const token = jwt.sign({ id: createdUser[0].id }, process.env.JWT_SECRET_KEY); 
 
-    return res.json({
+    return res
+    .status(201)
+    .json({
       message: "New account successfully created",
       token,
     });
