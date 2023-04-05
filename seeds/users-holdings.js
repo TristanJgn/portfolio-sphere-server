@@ -32,7 +32,7 @@ const userHoldingsData = [
   },
   {
     user_id: 1,
-    coin_id: 2,
+    coin_id: 1027,
     coin_name: "Ethereum",
     coin_symbol: "ETH",
     coin_amount: 2,
@@ -46,7 +46,7 @@ const userHoldingsData = [
   },
   {
     user_id: 2,
-    coin_id: 2,
+    coin_id: 1027,
     coin_name: "Ethereum",
     coin_symbol: "ETH",
     coin_amount: 5,
