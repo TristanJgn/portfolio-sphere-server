@@ -17,35 +17,75 @@ async function updateCoinTable (newCoinData) {
 }
 
 exports.index = (req, res) => {
-  axios
-  .get(
-    "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=100",
-    { headers: axiosHeaders }
-  )
-  .then((response) => {
-    const apiData = response.data.data;
-    const databaseData = apiData.map((coin) => {
-      return {
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol,
-        price: coin.quote.USD.price,
-        percent_change_1h: coin.quote.USD.percent_change_1h,
-        percent_change_24h: coin.quote.USD.percent_change_24h,
-        percent_change_7d: coin.quote.USD.percent_change_7d,
-        market_cap: coin.quote.USD.market_cap,
-        volume_24h: coin.quote.USD.volume_24h,
-      };
+  // Checking that it has been longer than 5 minutes since the last database update to prevent multiple API calls if many clients are running
+  knex("coin_data")
+    .select("updated_at") // Grab column of timestamp when the last API call was made
+    .then((lastUpdated) => {
+      const lastUpdatedTime = lastUpdated[0].updated_at.getTime(); // Take the first timestamp for simplicity (all records will be the same)
+      const currentTime = new Date().getTime(); // Get the current time
+
+      const timeDifferenceInMinutes = (currentTime - lastUpdatedTime) / 60000; // Find the difference in minutes between the current time and last updated time
+      return timeDifferenceInMinutes;
+    })
+    .then((timeDifferenceInMinutes) => {
+      if (timeDifferenceInMinutes > 5) { // Make the API request to refresh the data if it has been longer than 5 minutes since the last successful API call
+        axios
+          .get(
+            "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=100",
+            { headers: axiosHeaders }
+          )
+          .then((response) => {
+            const apiData = response.data.data;
+            const databaseData = apiData.map((coin) => {
+              return {
+                id: coin.id,
+                name: coin.name,
+                symbol: coin.symbol,
+                price: coin.quote.USD.price,
+                percent_change_1h: coin.quote.USD.percent_change_1h,
+                percent_change_24h: coin.quote.USD.percent_change_24h,
+                percent_change_7d: coin.quote.USD.percent_change_7d,
+                market_cap: coin.quote.USD.market_cap,
+                volume_24h: coin.quote.USD.volume_24h,
+              };
+            });
+            return updateCoinTable(databaseData);
+          })
+          .then((data) => {
+            res.json(data);
+          })
+          .catch((err) => {
+            res.status(500).json({
+              message: "There was an issue with the request",
+              err,
+            });
+          });
+      } else { // Return the existing data in the table from the last update
+        knex("coin_data")
+        .select(
+        "id",
+        "name",
+        "symbol",
+        "price",
+        "percent_change_1h",
+        "percent_change_24h",
+        "percent_change_7d",
+        "market_cap",
+        "volume_24h",
+        )
+          .then((data) => res.json(data))
+          .catch((err) => {
+            res.status(500).json({
+              message: "There was an issue with the request",
+              err,
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: "There was an issue with the request",
+        err,
+      });
     });
-    return updateCoinTable(databaseData);
-  })
-  .then((data) => {
-    res.json(data);
-  })
-  .catch((err) => {
-    res.status(500).json({
-      message: "There was an issue with the request",
-      err,
-    });
-  });
 };
