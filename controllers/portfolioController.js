@@ -40,3 +40,29 @@ exports.deleteCoin = (req, res) => {
       });
     });
 };
+
+exports.updateCoinAmount = (req, res) => {
+  knex("user_holdings")
+    .where({ user_id: req.userId, coin_id: req.params.coinId })
+    .update({
+        coin_amount: req.body.coin_amount,
+    })
+    .then(() => {
+        return knex("user_holdings")
+        .where({ user_id: req.userId, coin_id: req.params.coinId });
+    })
+    .then((coins) => {
+        if (coins.length === 0) {
+          return res.status(404).json({
+            message: `Unable to find coin with id: ${req.params.coinId}`,
+          }); 
+        }
+        res.status(200).json(coins[0]);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: "There was an issue with the request",
+        err,
+      });
+    });
+};
