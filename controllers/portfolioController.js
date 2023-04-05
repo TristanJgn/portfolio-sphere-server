@@ -13,12 +13,60 @@ exports.index = (req, res) => {
         return res.json(holdings);
       })
       .catch((err) => {
-        res.status(500).json({
+        return res.status(500).json({
           message: "There was an issue with the request",
           err,
         });
       });
 };
+
+exports.addCoin = (req, res) => {
+  const { coin_id, coin_name, coin_symbol, coin_amount} = req.body;
+
+  if (!coin_amount) {
+    return res.status(400).json({message: "Amount is required"});
+  }
+
+  knex("user_holdings")
+    .where({ user_id: req.userId, coin_id: coin_id })
+    .then((foundCoin) => {
+      if (foundCoin.length !== 0) {
+        return res.status(400).json({
+            message: "Coin is already in portfolio",
+        });
+      }
+
+      return knex("user_holdings").insert({
+        user_id: req.userId,
+        coin_id,
+        coin_name,
+        coin_symbol,
+        coin_amount,
+      });
+    })
+    .then(() => {
+        return knex("user_holdings").where({
+        user_id: req.userId,
+        coin_id: coin_id,
+        })
+        .select(
+        "coin_id",
+        "coin_name",
+        "coin_symbol",
+        "coin_amount",
+        );
+    })
+    .then((newCoin) => {
+        return res.status(201).json(newCoin[0]);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: "There was an issue with the request",
+        err,
+      });
+    });
+};
+
 
 exports.deleteCoin = (req, res) => {
   knex("user_holdings")
@@ -34,7 +82,7 @@ exports.deleteCoin = (req, res) => {
       res.sendStatus(204);
     })
     .catch((err) => {
-      res.status(500).json({
+      return res.status(500).json({
         message: "There was an issue with the request",
         err,
       });
@@ -60,7 +108,7 @@ exports.updateCoinAmount = (req, res) => {
         res.status(200).json(coins[0]);
     })
     .catch((err) => {
-      res.status(500).json({
+      return res.status(500).json({
         message: "There was an issue with the request",
         err,
       });
