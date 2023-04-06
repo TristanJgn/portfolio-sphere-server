@@ -5,6 +5,7 @@ require("dotenv").config();
 const coinsRoutes = require("./routes/coinsRoute");
 const usersRoutes = require("./routes/usersRoute");
 const portfolioRoutes = require("./routes/portfolioRoute");
+const dashboardRoutes = require("./routes/dashboardRoute");
 
 // Create an instance of express
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use("/coins", coinsRoutes);
 app.use("/users", usersRoutes);
 app.use("/portfolio", portfolioRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 // Bootstrap server
 app.listen(PORT, () => {
