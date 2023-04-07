@@ -73,7 +73,7 @@ exports.index = (req, res) => {
         "market_cap",
         "volume_24h",
         )
-        .orderBy("market_cap, desc")
+        .orderBy("market_cap", "desc")
           .then((data) => res.json(data))
           .catch((err) => {
             res.status(500).json({
