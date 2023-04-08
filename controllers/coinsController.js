@@ -21,10 +21,13 @@ exports.index = (req, res) => {
   knex("coin_data")
     .select("updated_at") // Grab column of timestamp when the last API call was made
     .then((lastUpdated) => {
-      const lastUpdatedTime = lastUpdated[0].updated_at.getTime(); // Take the first timestamp for simplicity (all records will be the same)
-      const currentTime = new Date().getTime(); // Get the current time
+      const lastUpdatedTime = lastUpdated[0].updated_at.getTime() / 1000; // Take the first timestamp for simplicity (all records will be the same)
+      const currentDateLocal = new Date();
+      const currentDateUTC = new Date(currentDateLocal.getTime() + currentDateLocal.getTimezoneOffset() * 60000); // Shifting local date to match UTC time
+      const currentTimeUTC = currentDateUTC.getTime() / 1000; // Get the current time in UTC so it is comparable against the API data which returns a UTC timestamp
 
-      const timeDifferenceInMinutes = (currentTime - lastUpdatedTime) / 60000; // Find the difference in minutes between the current time and last updated time
+      const timeDifferenceInMinutes =
+        (currentTimeUTC - lastUpdatedTime) / 60; // Find the difference in minutes between the current time and last updated time
       return timeDifferenceInMinutes;
     })
     .then((timeDifferenceInMinutes) => {

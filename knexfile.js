@@ -3,9 +3,10 @@ require("dotenv").config();
 module.exports = {
   client: "mysql2",
   connection: {
-    host: process.env.DB_LOCAL_HOST,
-    database: process.env.DB_LOCAL_DATABASE,
-    user: process.env.DB_LOCAL_USER,
-    password: process.env.DB_LOCAL_PASSWORD,
+    host: process.env.DB_AWS_HOST,
+    port: process.env.DB_AWS_PORT,
+    database: process.env.DB_AWS_DATABASE,
+    user: process.env.DB_AWS_USER,
+    password: process.env.DB_AWS_PASSWORD,
   },
 };
