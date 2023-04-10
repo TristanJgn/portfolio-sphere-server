@@ -21,6 +21,10 @@ exports.index = (req, res) => {
   knex("coin_data")
     .select("updated_at") // Grab column of timestamp when the last API call was made
     .then((lastUpdated) => {
+      if (lastUpdated.length === 0) { // If there is no coin_data, manually set the time difference to 100 to trigger an API request (mainly used for first time setup)
+        const timeDifferenceInMinutes = 100;
+        return timeDifferenceInMinutes; 
+      }
       const lastUpdatedTime = lastUpdated[0].updated_at.getTime() / 1000; // Take the first timestamp for simplicity (all records will be the same)
       const currentDateLocal = new Date();
       const currentDateUTC = new Date(currentDateLocal.getTime() + currentDateLocal.getTimezoneOffset() * 60000); // Shifting local date to match UTC time
