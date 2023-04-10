@@ -26,7 +26,7 @@ exports.addCoin = async (req, res) => {
 
     // Check that the amount trying to be entered is greater than 0
     if (coin_amount <= 0) {
-      return res.status(400).json({message: "Amount is required"});
+      return res.status(400).json({ message: "Invalid amount" });
     }
 
     // Check that the user doesn't already have the coin in their portfolio
@@ -93,7 +93,7 @@ exports.deleteCoin = (req, res) => {
 exports.updateCoinAmount = (req, res) => {
   // Check that the amount trying to be entered is greater than 0
   if (req.body.coin_amount <= 0) {
-    return res.status(400).json({ message: "Amount is required" });
+    return res.status(400).json({ message: "Invalid amount" });
   }
 
   knex("user_holdings")
