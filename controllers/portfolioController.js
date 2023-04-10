@@ -91,22 +91,29 @@ exports.deleteCoin = (req, res) => {
 };
 
 exports.updateCoinAmount = (req, res) => {
+  // Check that the amount trying to be entered is greater than 0
+  if (req.body.coin_amount <= 0) {
+    return res.status(400).json({ message: "Amount is required" });
+  }
+
   knex("user_holdings")
     .where({ user_id: req.userId, coin_id: req.params.coinId })
     .update({
-        coin_amount: req.body.coin_amount,
+      coin_amount: req.body.coin_amount,
     })
     .then(() => {
-        return knex("user_holdings")
-        .where({ user_id: req.userId, coin_id: req.params.coinId });
+      return knex("user_holdings").where({
+        user_id: req.userId,
+        coin_id: req.params.coinId,
+      });
     })
     .then((coins) => {
-        if (coins.length === 0) {
-          return res.status(404).json({
-            message: `Unable to find coin with id: ${req.params.coinId}`,
-          }); 
-        }
-        res.status(200).json(coins[0]);
+      if (coins.length === 0) {
+        return res.status(404).json({
+          message: `Unable to find coin with id: ${req.params.coinId}`,
+        });
+      }
+      res.status(200).json(coins[0]);
     })
     .catch((err) => {
       return res.status(500).json({
