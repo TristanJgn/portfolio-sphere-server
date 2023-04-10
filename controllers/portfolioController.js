@@ -22,19 +22,34 @@ exports.index = (req, res) => {
 
 exports.addCoin = async (req, res) => {
   try {
-    const { coin_id, coin_name, coin_symbol, coin_amount} = req.body;
+    const { coin_id, coin_name, coin_symbol, coin_amount } = req.body;
 
     // Check that the amount trying to be entered is greater than 0
     if (coin_amount <= 0) {
       return res.status(400).json({ message: "Invalid amount" });
     }
 
+    // Regex to ensure positive amounts greater than 0 are valid
+    // Can have any amount of digits before at the start
+    // Can include a single decimal or no decimal
+    // Must include at least 1 or more digits between 0-9
+    const amountRegexValidation = /^(\d)*(\.)?([0-9]+)+$/;
+    if (!req.body.coin_amount.match(amountRegexValidation)) {
+      return res.status(400).json({
+        message:
+          "Amount must include at least one digit between 0-9, a single decimal or no decimal, and cannot include letters or other special characters",
+      });
+    }
+
     // Check that the user doesn't already have the coin in their portfolio
-    const foundCoin = await knex("user_holdings").where({ user_id: req.userId, coin_id: coin_id })
+    const foundCoin = await knex("user_holdings").where({
+      user_id: req.userId,
+      coin_id: coin_id,
+    });
 
     if (foundCoin.length !== 0) {
       return res.status(400).json({
-          message: "Coin is already in portfolio",
+        message: "Coin is already in portfolio",
       });
     }
 
@@ -48,16 +63,12 @@ exports.addCoin = async (req, res) => {
     });
 
     // Grab the newly added coin and return it with a 201 status to let the user know it has been successfully created
-    const newCoin = await knex("user_holdings").where({
-    user_id: req.userId,
-    coin_id: coin_id,
-    })
-    .select(
-    "coin_id",
-    "coin_name",
-    "coin_symbol",
-    "coin_amount",
-    );
+    const newCoin = await knex("user_holdings")
+      .where({
+        user_id: req.userId,
+        coin_id: coin_id,
+      })
+      .select("coin_id", "coin_name", "coin_symbol", "coin_amount");
 
     res.status(201).json(newCoin[0]);
   }
@@ -94,6 +105,20 @@ exports.updateCoinAmount = (req, res) => {
   // Check that the amount trying to be entered is greater than 0
   if (req.body.coin_amount <= 0) {
     return res.status(400).json({ message: "Invalid amount" });
+  }
+
+  // Regex to ensure positive amounts greater than 0 are valid
+  // Can have any amount of digits before at the start
+  // Can include a single decimal or no decimal
+  // Must include at least 1 or more digits between 0-9
+  const amountRegexValidation = /^(\d)*(\.)?([0-9]+)+$/;
+  if (!req.body.coin_amount.match(amountRegexValidation)) {
+    return res
+      .status(400)
+      .json({
+        message:
+          "Amount must include at least one digit between 0-9, a single decimal or no decimal, and cannot include letters or other special characters",
+      });
   }
 
   knex("user_holdings")
