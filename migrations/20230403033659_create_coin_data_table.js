@@ -4,7 +4,7 @@ exports.up = function (knex) {
       table.uuid("id").primary();
       table.string("name").notNullable();
       table.string("symbol").notNullable();
-      table.decimal("price", 14, 21).notNullable(); // Allows for price to be 14 numbers with 21 decimals for the cents as that is what the API returns (need to allow for this to maintain precision of certain coins that have really low prices i.e. less than $0.01)
+      table.decimal("price", 21, 21).notNullable(); // Allows for price to be 21 numbers with 21 decimals for the cents as that is what the API returns (need to allow for this to maintain precision of certain coins that have really low prices i.e. less than $0.01)
       table.decimal("percent_change_1h", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
       table.decimal("percent_change_24h", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
       table.decimal("percent_change_7d", 14, 4).notNullable(); // Percentage to be displayed with 2 decimal points when multiplied by 100 so must allow 4 decimals
